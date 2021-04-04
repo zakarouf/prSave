@@ -6,13 +6,110 @@ from datetime import timedelta
 from subprocess import Popen
 import sys
 
-ARCHIVE_CONFIG_FILE_NAME = "prSave.archive.conf"
 SELF_CONFIG_FILE_NAME = "prSave.conf"
+
+ARCHIVE_CONFIG_FILE_NAME = "prSave.archive.conf"
+ARCHIVE_LOG_FILE_NAME = "prSave.log.txt"
+
+
+
+ARCHIVE_SYNTX__ARFOLDER = "ar"
+ARCHIVE_SYNTX__START = "---"
 
 def run(commands):
     Popen(commands).wait()
 
-def arguments(argsval):
+
+def create_new():
+    try:
+        fp = open(ARCHIVE_CONFIG_FILE_NAME, "r")
+        confirm = input("An Archive Instance Already Exist <Overwrite> (Y)es|(N)o|(E)dit: ")
+        if confirm.lower() == 'y':
+            pass
+
+        
+        fp.close()
+        return
+
+    except FileNotFoundError:
+        pass
+
+    fp = open(ARCHIVE_CONFIG_FILE_NAME, "w")
+    fp.write(ARCHIVE_SYNTX__START)
+
+    _tmp = input("Set Archive Folder (absolute path): ")
+    if _tmp[-1] != '/':
+        _tmp += '/'
+    fp.write(ARCHIVE_SYNTX__ARFOLDER + " !" + _tmp)
+
+    fp.close()
+
+    print("DONE!")
+
+
+ARCHIVE_data__ar = ""
+
+def do_archive(set_arfolder, set_ifdisable_log):
+    data = []
+    try:
+        fp = open(ARCHIVE_CONFIG_FILE_NAME, "r")
+
+        data = fp.readlines()
+
+        fp.close()
+    except FileNotFoundError:
+        print("No prSave Instance has been Initiated yet use '--new' to first")
+        return
+
+    st = 0
+
+    for i in data:
+        if i == ARCHIVE_SYNTX__START
+            break
+        st += 1
+
+    leng = len(data)
+    for i in range(st, data):
+
+        if data[i][:2] == ARCHIVE_SYNTX__ARFOLDER:
+            count = 0
+            for ch in data[i]:
+                if ch == '!':
+                    ARCHIVE_data__ar = data[i][count:]
+                    break
+                count += 1
+
+    if ARCHIVE_data__ar == "":
+        print("Could find Archive Folder Name in Config")
+
+    outFile = input("Version: ")
+    outFile += ".tar"
+    run(["tar", "-cf", outFile, "./*"])
+    run(["mv", outFile, ARCHIVE_data__ar])
+
+    print("Project Archived\nAt: ", ARCHIVE_data__ar+outFile)
+
+    if set_ifdisable_log == True:
+        return
+
+    logfile = open(ARCHIVE_data__ar + ARCHIVE_LOG_FILE_NAME, "a")
+    curDT = datetime.now().strftime("[%Y-%m-%d||%H:%M:%S]")
+    logfile.write(curDT + outFile)
+    logfile.close()
+        
+
+def main(def_args=sys.argv[1:]):
+    args = arguments_parse(def_args)
+
+    if args.new:
+        create_new()
+        return
+
+    do_archive(args.archive_in, archive_log)
+
+
+
+def arguments_parse(argsval):
     parser = argparse.ArgumentParser()
     parser.add_argument('-n', '--new',
                         required=False, action='store_true', default=False,
