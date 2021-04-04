@@ -26,10 +26,7 @@ def create_new():
         confirm = input("An Archive Instance Already Exist <Overwrite> (Y)es|(N)o|(E)dit: ")
         if confirm.lower() == 'y':
             pass
-
-        
         fp.close()
-        return
 
     except FileNotFoundError:
         pass
@@ -40,6 +37,7 @@ def create_new():
     _tmp = input("Set Archive Folder (absolute path): ")
     if _tmp[-1] != '/':
         _tmp += '/'
+    _tmp += "\n"
     fp.write(ARCHIVE_SYNTX__ARFOLDER + " !" + _tmp)
 
     fp.close()
@@ -50,6 +48,8 @@ def create_new():
 ARCHIVE_data__ar = ""
 
 def do_archive(set_arfolder, set_ifdisable_log):
+    global ARCHIVE_data__ar
+
     data = []
     try:
         fp = open(ARCHIVE_CONFIG_FILE_NAME, "r")
@@ -64,27 +64,31 @@ def do_archive(set_arfolder, set_ifdisable_log):
     st = 0
 
     for i in data:
-        if i == ARCHIVE_SYNTX__START
+        if i == ARCHIVE_SYNTX__START:
             break
         st += 1
 
     leng = len(data)
-    for i in range(st, data):
+    for i in range(st-1, leng):
 
         if data[i][:2] == ARCHIVE_SYNTX__ARFOLDER:
             count = 0
             for ch in data[i]:
                 if ch == '!':
-                    ARCHIVE_data__ar = data[i][count:]
+                    ARCHIVE_data__ar = data[i][count+1:]
                     break
                 count += 1
 
+        
+
+
     if ARCHIVE_data__ar == "":
-        print("Could find Archive Folder Name in Config")
+        print("Couldn't find Archive Folder Name in Config")
+        print(data)
 
     outFile = input("Version: ")
     outFile += ".tar"
-    run(["tar", "-cf", outFile, "./*"])
+    run(["tar", "-cf", outFile, ] + os.listdir())
     run(["mv", outFile, ARCHIVE_data__ar])
 
     print("Project Archived\nAt: ", ARCHIVE_data__ar+outFile)
@@ -105,7 +109,7 @@ def main(def_args=sys.argv[1:]):
         create_new()
         return
 
-    do_archive(args.archive_in, archive_log)
+    do_archive(args.archive_in, args.archive_log)
 
 
 
