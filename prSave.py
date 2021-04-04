@@ -34,6 +34,10 @@ def arguments(argsval):
                         required=False, action='store_true',default=True,
                         help="""Disable Archive Log (Permanent)""")
 
+    parser.add_argument('-s', '--show_arpath',
+                        required=False, default="", type=str,
+                        help="""Show Archive Folder""")
+
     return parser.parse_args(argsval)
 
 
