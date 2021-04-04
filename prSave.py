@@ -94,6 +94,7 @@ def do_archive(set_arfolder, set_ifdisable_log):
     print("Project Archived\nAt: ", ARCHIVE_data__ar+outFile)
 
     if set_ifdisable_log == True:
+        print("Not Creating Log")
         return
 
     logfile = open(ARCHIVE_data__ar + ARCHIVE_LOG_FILE_NAME, "a")
@@ -128,7 +129,7 @@ def arguments_parse(argsval):
                         help="""Change Archive Folder""")
 
     parser.add_argument('-l', '--archive_log',
-                        required=False, action='store_true',default=True,
+                        required=False, action='store_true',default=False,
                         help="""Disable Archive Log (One Time)""")
 
     parser.add_argument('-p', '--archive_log_perm',
